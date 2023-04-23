@@ -28,14 +28,13 @@
     "react-howler": "^5.2.0",
     "react-icons": "^4.3.1",
     "reset-css": "^5.0.1",
-    "swr": "^2.1.2",
-    "typescript": "^4.9.5"
+    "swr": "^2.1.2"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
     "@types/cookie": "^0.5.1",
     "@types/jsonwebtoken": "^9.0.1",
-    "@types/node": "18.15.5",
+    "@types/node": "^18.15.5",
     "@types/react": "18.0.28",
     "@types/react-dom": "18.0.11",
     "@typescript-eslint/eslint-plugin": "^5.6.0",
@@ -51,9 +50,10 @@
     "eslint-plugin-react-hooks": "^4.3.0",
     "prettier": "^2.4.1",
     "prisma": "^4.11.0",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
   },
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "seed": "ts-node --transpile-only --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   }
 }
