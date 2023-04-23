@@ -22,7 +22,7 @@ const PageLayout = ({
       }}
     >
       {headerComponent}
-      {children}
+      <Box padding={5}>{children}</Box>
     </Box>
   )
 }

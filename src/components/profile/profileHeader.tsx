@@ -25,14 +25,14 @@ const ProfileHeader = ({
         boxShadow="2xl"
         borderRadius="100%"
       />
-      <Box lineHeight="40px" flex={1} color="whiteAlpha.800">
-        <Text as="p" fontSize="x-small" fontWeight="bold" casing="uppercase">
+      <Box lineHeight="40px" flex={1} color="white">
+        <Text as="p" fontSize="x-small" fontWeight="500" casing="uppercase">
           {subtitle}
         </Text>
-        <Text as="h1" fontSize="7xl" marginTop="5px">
+        <Text as="h1" fontSize="7xl" marginTop="5px" fontWeight="bold">
           {title}
         </Text>
-        <Text as="p" fontSize="l-small" marginTop="10px">
+        <Text as="p" fontSize="l-small" marginTop="10px" fontWeight="400">
           {description}
         </Text>
       </Box>
