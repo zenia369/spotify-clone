@@ -41,5 +41,6 @@ module.exports = {
     ],
     'react/require-default-props': 'off',
     'prettier/prettier': ['warn', { endOfLine: 'auto' }],
+    'import/no-cycle': 'off',
   },
 }
