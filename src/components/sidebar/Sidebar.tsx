@@ -18,7 +18,10 @@ import {
   MdFavorite,
 } from 'react-icons/md'
 import { IconType } from 'react-icons'
+
 import { usePlaylist } from '@/src/hooks/useApiClient'
+
+import { PlayList } from '@prisma/client'
 
 const navMenu = [
   {
@@ -83,7 +86,7 @@ const Sidebar = () => {
       as="aside"
       sx={{
         width: '100%',
-        height: 'calc(100% - 100px)',
+        height: '100%',
         background: 'black',
         paddingX: '5px',
         color: 'gray',
@@ -131,13 +134,13 @@ const Sidebar = () => {
             <p>Loading playlist...</p>
           ) : (
             <List spacing={2}>
-              {playlist?.map((pl: any) => (
+              {playlist?.map((pl: PlayList) => (
                 <ListItem
                   key={pl.id}
                   sx={{ paddingX: '20px', fontSize: '16px' }}
                 >
                   <LinkBox _hover={{ color: 'white' }}>
-                    <Link href="/">
+                    <Link href={`/playlist/${pl.id}`}>
                       <LinkOverlay
                         as="div"
                         sx={{ textTransform: 'capitalize' }}

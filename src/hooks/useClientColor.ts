@@ -1,3 +1,6 @@
+import { useRouter } from 'next/router'
+import { useState, useLayoutEffect } from 'react'
+
 const colors = [
   'red',
   'green',
@@ -10,6 +13,15 @@ const colors = [
   'pink',
 ]
 
+const getColor = () => colors[Math.floor(Math.random() * colors.length)]
+
 export default () => {
-  return colors[Math.floor(Math.random() * colors.length)]
+  const router = useRouter()
+  const [color, setColor] = useState(getColor)
+
+  useLayoutEffect(() => {
+    setColor(getColor)
+  }, [router.asPath])
+
+  return color
 }

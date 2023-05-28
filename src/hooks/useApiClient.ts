@@ -1,8 +1,7 @@
-import { User } from '@prisma/client'
+import { User, PlayList } from '@prisma/client'
 import useSWR from 'swr'
 
 import { ApiClient } from '../lib/api.client'
-import { PlaylistType } from '../types/Playlist'
 
 export const useMe = () => {
   const { data, error, isLoading } = useSWR<User & { playlistCount: number }>(
@@ -18,7 +17,7 @@ export const useMe = () => {
 }
 
 export const usePlaylist = () => {
-  const { data, error, isLoading } = useSWR<PlaylistType[]>(
+  const { data, error, isLoading } = useSWR<PlayList[]>(
     '/playlist',
     ApiClient.get
   )

@@ -1,8 +1,13 @@
-export interface PlaylistType {
-  created_at: string
-  id: number
-  name: string
-  updated_at: string
-  userId: number
-  songs: any[]
+import { Artist, PlayList, Song } from '@prisma/client'
+
+export type PlayListItemWithArtist = Song & {
+  artist: Pick<Artist, 'name' | 'id'>
+}
+
+export type PlayListWithSongs = PlayList & {
+  songs: PlayListItemWithArtist[]
+}
+
+export interface PlaylitsProps {
+  playlist: PlayListWithSongs
 }
