@@ -1,23 +1,25 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { HYDRATE } from 'next-redux-wrapper'
 
-import { Song } from '@prisma/client'
 import { RootState } from '@/src/types/Store'
 import { PlayListItemWithArtist } from '@/src/types/Playlist'
 
+import { getRandomSong } from '@/src/utils/helpers'
 import { playlistApi } from '../services/playlist.service'
 
 interface InitialState {
   playlist: PlayListItemWithArtist[]
-  activeSong: null | Song | PlayListItemWithArtist
+  activeSong: null | PlayListItemWithArtist
   playlistId: number
   isPlaying: boolean
   isLoading: boolean
+  playedSongs: number[]
 }
 
 const initialState: InitialState = {
   activeSong: null,
   playlist: [],
+  playedSongs: [],
   playlistId: 0,
   isPlaying: false,
   isLoading: false,
@@ -40,8 +42,7 @@ export const playerbarSlice = createSlice({
       if (state.isPlaying) {
         state.isPlaying = false
       } else {
-        // eslint-disable-next-line prefer-destructuring
-        state.activeSong = state.playlist[0]
+        state.activeSong = state.playlist.at(0) as PlayListItemWithArtist
         state.isPlaying = true
       }
     },
@@ -58,6 +59,16 @@ export const playerbarSlice = createSlice({
       )
       const nextSong = state.playlist[idxCurrSong - 1]
       state.activeSong = nextSong || state.playlist.at(-1)
+    },
+    shuffleActiveSong(state) {
+      const song = getRandomSong(
+        state.playlist,
+        state.playedSongs
+      ) as PlayListItemWithArtist
+      state.activeSong = song
+      if (!state.playedSongs.find((s) => s === song.id)) {
+        state.playedSongs.push(song.id)
+      }
     },
   },
   extraReducers: (builder) => {
@@ -83,6 +94,7 @@ export const playerbarSlice = createSlice({
           state.playlist = action.payload.songs
           state.playlistId = action.meta.arg.originalArgs
           state.isLoading = false
+          state.playedSongs = []
         }
       )
   },

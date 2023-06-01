@@ -1,12 +1,8 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import {
   Box,
   ButtonGroup,
   IconButton,
-  RangeSlider,
-  RangeSliderFilledTrack,
-  RangeSliderTrack,
-  RangeSliderThumb,
   Center,
   Flex,
   Text,
@@ -30,7 +26,9 @@ import {
   PlayerbarActions,
   PlayerbarSelect,
 } from '@/src/redux/features/playerbarSlice'
-import { getMinuts } from '@/src/utils/timeValidate'
+
+import VolumeController from './components/VolumeController'
+import SongController from './components/SongController'
 
 const Playerbar = () => {
   const dispatch = useDispatch()
@@ -41,17 +39,23 @@ const Playerbar = () => {
   const [shuffle, setShuffle] = useState(false)
   const [isSeeking, setIsSeeking] = useState(false)
   const [duration, setDuration] = useState(0.0)
+  const [volume, setVolume] = useState(1)
   const [seek, setSeek] = useState(0.0)
   const howlerRef = useRef<ReactHowler | null>(null)
   const repeatRef = useRef(repeat)
+  const shuffleRef = useRef(shuffle)
 
-  const onEnd = useCallback(() => {
+  const onEnd = () => {
     if (!repeatRef.current) {
-      dispatch(PlayerbarActions.setNextSong())
+      if (shuffleRef.current) {
+        dispatch(PlayerbarActions.shuffleActiveSong())
+      } else {
+        dispatch(PlayerbarActions.setNextSong())
+      }
     }
     setSeek(0)
     howlerRef.current?.seek(0)
-  }, [dispatch])
+  }
 
   const onLoad = () => {
     if (howlerRef.current) {
@@ -69,7 +73,11 @@ const Playerbar = () => {
   }
 
   const handlePrevSong = () => {
-    dispatch(PlayerbarActions.setPrevSong())
+    if (shuffle) {
+      dispatch(PlayerbarActions.shuffleActiveSong())
+    } else {
+      dispatch(PlayerbarActions.setPrevSong())
+    }
     setSeek(0)
     howlerRef.current?.seek(0)
   }
@@ -78,27 +86,31 @@ const Playerbar = () => {
     dispatch(PlayerbarActions.setIsPlaying())
   }
 
+  const handleChangeVolume = (value: number) => {
+    setVolume(value)
+    howlerRef.current?.howler.volume(value)
+  }
+
   useEffect(() => {
-    let rafId!: number
+    let intervalId!: any
 
     if (isPlaying && !isSeeking) {
-      const updateRange = () => {
+      intervalId = setInterval(() => {
         if (howlerRef.current) {
           setSeek(howlerRef.current.seek())
-          rafId = requestAnimationFrame(updateRange)
         }
-      }
-
-      rafId = requestAnimationFrame(updateRange)
-      return () => cancelAnimationFrame(rafId)
+      }, 1_000)
+    } else {
+      clearInterval(intervalId)
     }
 
-    cancelAnimationFrame(rafId)
+    return () => clearInterval(intervalId)
   }, [isPlaying, isSeeking])
 
   useEffect(() => {
     repeatRef.current = repeat
-  }, [repeat])
+    shuffleRef.current = shuffle
+  }, [repeat, shuffle])
 
   if (!song) return null
 
@@ -110,6 +122,7 @@ const Playerbar = () => {
         ref={howlerRef}
         onEnd={() => onEnd()}
         onLoad={onLoad}
+        volume={volume}
       />
       <Grid
         bg="blackAlpha.900"
@@ -144,7 +157,7 @@ const Playerbar = () => {
           </Center>
         </GridItem>
         <GridItem>
-          <Flex flex="2" direction="column">
+          <Flex direction="column">
             <Center color="gray.200">
               <ButtonGroup>
                 <IconButton
@@ -197,31 +210,19 @@ const Playerbar = () => {
                 />
               </ButtonGroup>
             </Center>
-            <Center color="gray.200" gap={3}>
-              <Text fontSize="xs">{getMinuts(Math.floor(seek))}</Text>
-              <RangeSlider
-                // eslint-disable-next-line jsx-a11y/aria-proptypes
-                aria-label={['min', 'max']}
-                step={0.1}
-                min={0}
-                max={duration ? Number(duration.toFixed(2)) : 0}
-                id="player-range"
-                onChange={onSeek}
-                value={[seek]}
-                onChangeStart={() => setIsSeeking(true)}
-                onChangeEnd={() => setIsSeeking(false)}
-              >
-                <RangeSliderTrack color="gray.800">
-                  <RangeSliderFilledTrack bg="gray.600" />
-                </RangeSliderTrack>
-                <RangeSliderThumb index={0} />
-              </RangeSlider>
-              <Text fontSize="xs">{getMinuts(Math.floor(duration))}</Text>
-            </Center>
+            <SongController
+              seek={seek}
+              duration={duration}
+              onSeek={onSeek}
+              setIsSeeking={setIsSeeking}
+            />
           </Flex>
         </GridItem>
         <GridItem>
-          <Box flex="1">test 2</Box>
+          <VolumeController
+            volume={volume}
+            handleChangeVolume={handleChangeVolume}
+          />
         </GridItem>
       </Grid>
     </>
