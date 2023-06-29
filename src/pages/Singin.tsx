@@ -77,10 +77,9 @@ const Singin = () => {
           password: state.password.value,
         })
         router.push('/')
-      } catch (error) {
-        console.warn(error)
+      } finally {
+        dispatch({ type: ActionTypes.updateLoading, payload: false })
       }
-      dispatch({ type: ActionTypes.updateLoading, payload: false })
     },
     [state.email.value, state.password.value, router]
   )

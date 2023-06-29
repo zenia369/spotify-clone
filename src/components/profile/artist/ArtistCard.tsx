@@ -2,7 +2,7 @@ import { Box, Text } from '@chakra-ui/layout'
 import { Image } from '@chakra-ui/react'
 import { Artist } from '@prisma/client'
 
-interface ArtistCardProps extends Artist { }
+interface ArtistCardProps extends Artist {}
 
 const ArtistCard = ({ name, photo }: ArtistCardProps) => {
   return (

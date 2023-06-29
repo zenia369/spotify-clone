@@ -86,10 +86,9 @@ const Singup = () => {
           name: state.name.value,
         })
         router.push('/')
-      } catch (error) {
-        console.warn(error)
+      } finally {
+        dispatch({ type: ActionTypes.updateLoading, payload: false })
       }
-      dispatch({ type: ActionTypes.updateLoading, payload: false })
     },
     [state.email.value, state.password.value, state.name.value, router]
   )
