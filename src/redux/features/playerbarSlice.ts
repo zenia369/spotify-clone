@@ -39,12 +39,8 @@ export const playerbarSlice = createSlice({
       state.isPlaying = !state.isPlaying
     },
     startPlaySong(state) {
-      if (state.isPlaying) {
-        state.isPlaying = false
-      } else {
-        state.activeSong = state.playlist.at(0) as PlayListItemWithArtist
-        state.isPlaying = true
-      }
+      state.activeSong = state.playlist.at(0) as PlayListItemWithArtist
+      state.isPlaying = true
     },
     setNextSong(state) {
       const idxCurrSong = state.playlist.findIndex(
@@ -81,22 +77,16 @@ export const playerbarSlice = createSlice({
         }
       }
     )
-    builder
-      .addMatcher(
-        playlistApi.endpoints.getPlayListById.matchFulfilled,
-        (state) => {
-          state.isLoading = true
-        }
-      )
-      .addMatcher(
-        playlistApi.endpoints.getPlayListById.matchFulfilled,
-        (state, action) => {
-          state.playlist = action.payload.songs
-          state.playlistId = action.meta.arg.originalArgs
-          state.isLoading = false
-          state.playedSongs = []
-        }
-      )
+    builder.addMatcher(
+      playlistApi.endpoints.getPlayListById.matchFulfilled,
+      (state, action) => {
+        state.playlist = action.payload.songs
+        state.playlistId = action.meta.arg.originalArgs
+        state.isLoading = false
+        state.playedSongs = []
+        state.isPlaying = false
+      }
+    )
   },
 })
 

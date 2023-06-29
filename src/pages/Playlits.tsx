@@ -5,13 +5,13 @@ import { useCallback } from 'react'
 
 import { PlaylitsProps } from '../types/Playlist'
 
-import { useAppDispatch } from '../redux/store'
 import useClientColor from '../hooks/useClientColor'
 
 import PageLayout from '../components/layouts/PageLayout'
 import PlaylistHeader from '../components/playlist/PlaylistHeader'
 import SongsTable from '../components/ui/table/SongsTable'
 
+import { useAppDispatch } from '../redux/store'
 import {
   PlayerbarActions,
   PlayerbarSelect,
@@ -24,7 +24,7 @@ const Playlits = ({ playlist }: PlaylitsProps) => {
   const isPlaying = useSelector(PlayerbarSelect.isPlaying)
   const playlistId = useSelector(PlayerbarSelect.playlistId)
 
-  const handleClick = useCallback(
+  const handleSongClick = useCallback(
     async (id: number) => {
       if (playlistId !== playlist.id) {
         await dispatch(
@@ -36,6 +36,17 @@ const Playlits = ({ playlist }: PlaylitsProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [playlistId, playlist.id]
   )
+
+  const handleClick = async () => {
+    if (playlistId !== playlist.id) {
+      await dispatch(
+        playlistApi.endpoints.getPlayListById.initiate(playlist.id)
+      )
+      dispatch(PlayerbarActions.startPlaySong())
+    } else {
+      dispatch(PlayerbarActions.setIsPlaying())
+    }
+  }
 
   return (
     <PageLayout
@@ -55,7 +66,7 @@ const Playlits = ({ playlist }: PlaylitsProps) => {
           <IconButton
             aria-label="play"
             icon={
-              isPlaying ? (
+              isPlaying && playlistId === playlist.id ? (
                 <BsFillPauseFill fontSize="30px" />
               ) : (
                 <BsFillPlayFill fontSize="30px" />
@@ -64,10 +75,10 @@ const Playlits = ({ playlist }: PlaylitsProps) => {
             colorScheme="green"
             size="lg"
             isRound
-            onClick={() => dispatch(PlayerbarActions.startPlaySong())}
+            onClick={handleClick}
           />
         </Box>
-        <SongsTable songs={playlist.songs} onClick={handleClick} />
+        <SongsTable songs={playlist.songs} onClick={handleSongClick} />
       </Box>
     </PageLayout>
   )
