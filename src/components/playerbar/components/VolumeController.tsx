@@ -21,21 +21,21 @@ const VolumeController = ({
   volume,
 }: VolumeControllerProps) => {
   const [volumeMute, setVolumeMute] = useState(false)
+  const [cachedVolue, setCachedVolue] = useState(0)
 
   const onSeek = (e: number[]) => {
     handleChangeVolume(e[0])
   }
 
   const handleVolumeMute = () => {
-    setVolumeMute((prev) => {
-      const newValue = !prev
-      if (newValue) {
-        handleChangeVolume(0)
-      } else {
-        handleChangeVolume(volume)
-      }
-      return newValue
-    })
+    const newValue = !volumeMute
+    if (newValue) {
+      handleChangeVolume(0)
+      setCachedVolue(volume)
+    } else {
+      handleChangeVolume(cachedVolue)
+    }
+    setVolumeMute(newValue)
   }
 
   return (
